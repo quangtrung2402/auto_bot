@@ -141,18 +141,35 @@ def send_telegram_photo():
         print("Lỗi: Chưa thiết lập TELEGRAM_BOT_TOKEN hoặc TELEGRAM_CHAT_ID!")
         return
 
-    # Lấy dữ liệu và tạo ảnh
+    # Lấy dữ liệu chứng khoán
     stock_data = get_stock_prices()
+
+    # KIỂM TRA: Nếu không có dữ liệu/ticker nào trong danh sách
+    if not stock_data:
+        error_message = "⚠️ **THÔNG BÁO**: Hiện tại không có mã cổ phiếu nào trong danh sách theo dõi (TICKERS_HOLD / TICKERS_REFER)!"
+        
+        url_text = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload_text = {
+            "chat_id": chat_id,
+            "text": error_message,
+            "parse_mode": "HTML"
+        }
+        res = requests.post(url_text, json=payload_text)
+        if res.status_code != 200:
+            print(f"Lỗi gửi tin nhắn Telegram: {res.text}")
+        return
+
+    # Nếu CÓ DATA -> Tiến hành gen ảnh và gửi qua sendPhoto
     img_buf = generate_table_image(stock_data)
 
     # Gửi ảnh sang Telegram bằng sendPhoto API
-    url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
-    payload = {"chat_id": chat_id}
+    url_photo = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+    payload_photo = {"chat_id": chat_id}
     files = {"photo": ("stock_table.png", img_buf, "image/png")}
 
-    res = requests.post(url, data=payload, files=files)
+    res = requests.post(url_photo, data=payload_photo, files=files)
     if res.status_code != 200:
-        print(f"Lỗi gửi Telegram: {res.text}")
+        print(f"Lỗi gửi ảnh Telegram: {res.text}")
 
 if __name__ == "__main__":
     send_telegram_photo()
