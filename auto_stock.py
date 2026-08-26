@@ -6,9 +6,16 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timezone, timedelta
 from vnstock.api.quote import Quote  # Import class Quote mới từ vnstock.api
 
-# Danh sách mã cổ phiếu quan tâm
-TICKERS_HOLD = ["VIC"]
-TICKERS_REFER = ["FPT"]
+def get_tickers_from_env(env_name, default_list):
+    env_val = os.environ.get(env_name)
+    if not env_val:
+        return default_list
+    # Tách chuỗi theo dấu phẩy và xóa khoảng trắng thừa ở 2 đầu mỗi mã
+    return [ticker.strip().upper() for ticker in env_val.split(",") if ticker.strip()]
+
+# Đọc danh sách mã từ biến môi trường (Nếu không có sẽ dùng danh sách mặc định là empty)
+TICKERS_HOLD = get_tickers_from_env("TICKERS_HOLD", [])     # TICKERS_HOLD = "VIC"
+TICKERS_REFER = get_tickers_from_env("TICKERS_REFER", [])   # TICKERS_REFER = "FPT"
 
 def get_stock_prices():
     data = []
