@@ -6,12 +6,9 @@ on:
     branches:
       - master
 
-  # 2. Chạy định kỳ theo lịch (Ví dụ: 15:00 từ Thứ 2 đến Thứ 6 giờ Việt Nam = 08:00 UTC)
-  schedule:
-    # 05:30 UTC = 12:30 Việt Nam (Thứ 2 - Thứ 6)
-    - cron: '30 5 * * 1-5'
-    # 09:00 UTC = 16:00 Việt Nam (Thứ 2 - Thứ 6)
-    - cron: '0 9 * * 1-5'
+  # 2. Lắng nghe request từ dịch vụ Cron bên ngoài
+  repository_dispatch:
+    types: [trigger-stock-bot]
   workflow_dispatch: # Nút bấm chạy tay trên giao diện GitHub
 
 jobs:
